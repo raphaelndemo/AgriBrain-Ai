@@ -205,3 +205,29 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+# SECURITY: NEVER COMMIT THESE 
+.env
+.env.local
+*.pem
+secrets/
+
+# === PYTHON & ENVIRONMENTS ===
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+env/
+.venv/
+
+# === DATA & MODELS ===
+*.csv
+*.xlsx
+*.json
+AgriBrain_Raw_Data/
+models/*.json
+models/*.pkl
+
+# === CHAINLIT CACHE ===
+.chainlit/
+.pytest_cache/
