@@ -1,2 +1,9 @@
 pandas
+numpy
 sklearn
+python-dotenv
+supabase
+selenium
+beautifulsoup4
+webdriver-manager
+geopy
