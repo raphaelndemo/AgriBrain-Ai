@@ -8,7 +8,7 @@ env:
   PROJECT_ID: agribrain-core
   REGION: africa-south1
   REPO_NAME: agribrain-repo
-  SERVICE_NAME: agribrain-app
+  SERVICE_NAME: agribrain-ai
 
 jobs:
   build-and-deploy:
