@@ -9,3 +9,5 @@ webdriver-manager
 geopy
 requests
 gcloud
+chainlit
+google-generativeai
