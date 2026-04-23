@@ -7,3 +7,5 @@ selenium
 beautifulsoup4
 webdriver-manager
 geopy
+requests
+gcloud
