@@ -17,4 +17,4 @@ COPY . .
 EXPOSE 7860
 
 # The command Google Cloud to start app
-CMD ["chainlit", "run", "app.py", "--host", "0.0.0.0", "--port", "7860", "--headless"]
+CMD ["python", "-m", "chainlit", "run", "app.py", "--host", "0.0.0.0", "--port", "7860", "--headless"]
