@@ -6,7 +6,7 @@ on:
 
 env:
   PROJECT_ID: agribrain-ai   
-  REGION: 'africa-south1 '           
+  REGION: 'africa-south1 -docker.pkg.dev'           
   REPO_NAME: agribrain-repo
   SERVICE_NAME: agribrain-app
 
