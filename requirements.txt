@@ -11,3 +11,4 @@ requests
 gcloud
 chainlit
 google-generativeai
+langchain
