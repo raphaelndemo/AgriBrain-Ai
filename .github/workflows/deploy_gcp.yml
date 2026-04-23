@@ -5,8 +5,8 @@ on:
     branches: [main]
 
 env:
-  PROJECT_ID: agribrain-ai   
-  REGION: africa-south1          
+  PROJECT_ID: agribrain-core
+  REGION: africa-south1
   REPO_NAME: agribrain-repo
   SERVICE_NAME: agribrain-app
 
@@ -44,4 +44,5 @@ jobs:
             --allow-unauthenticated \
             --memory 2Gi \
             --cpu 1 \
+            --set-env-vars=GCP_PROJECT=${{ env.PROJECT_ID }},GCP_REGION=${{ env.REGION }} \
             --set-secrets=GEMINI_API_KEY=GEMINI_API_KEY:latest,SUPABASE_URL=SUPABASE_URL:latest,SUPABASE_ANON_KEY=SUPABASE_ANON_KEY:latest
