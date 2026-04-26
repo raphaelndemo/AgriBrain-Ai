@@ -12,3 +12,5 @@ gcloud
 chainlit
 google-generativeai
 langchain
+fastapi
+uvicorn

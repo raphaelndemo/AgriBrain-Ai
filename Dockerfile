@@ -10,7 +10,7 @@ RUN apt-get update && apt-get install -y \
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy all your Python scripts, folders, and ML models into the container
+# Copy all Python scripts and ml models into the container
 COPY . .
 
 # Open port 7860 so internet traffic can reach the app
