@@ -1,0 +1,25 @@
+[data-testid="chat-container"] {
+  max-width: 700px;
+  margin: auto;
+}
+
+/* Better spacing */
+h1, h2 {
+  margin-bottom: 0.5rem;
+}
+
+/* Improve readability */
+p {
+  line-height: 1.6;
+}
+
+/* Input box styling */
+textarea {
+  border-radius: 12px !important;
+  padding: 10px !important;
+}
+
+/* Slight message spacing */
+.ai-message {
+  margin-bottom: 10px;
+}
