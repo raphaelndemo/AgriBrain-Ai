@@ -1,43 +1,64 @@
-# backend_scripts/models.py
 import os
 import joblib
-import numpy as np
+from google.cloud import storage
 
-# Global variables to hold the models in memory
-_yield_model = None
-_market_model = None
 
-def _load_models():
-    """Loads models into memory only once."""
-    global _yield_model, _market_model
+# CONFIGURATION
+BUCKET_NAME = "agribrain-models"
+LOCAL_MODEL_DIR = "ml_models"
+
+YIELD_MODEL_FILENAME = "yield_predictor.pkl"
+MARKET_MODEL_FILENAME = "market_forecaster.pkl"
+
+YIELD_MODEL_PATH = os.path.join(LOCAL_MODEL_DIR, YIELD_MODEL_FILENAME)
+MARKET_MODEL_PATH = os.path.join(LOCAL_MODEL_DIR, MARKET_MODEL_FILENAME)
+
+# ASSET RETRIEVAL PROTOCOL
+def download_models_from_bucket():
+    """
+    The pipeline securely streams ML models from Google Cloud Storage 
+    into the local container storage prior to application initialization.
+    """
+    os.makedirs(LOCAL_MODEL_DIR, exist_ok=True)
     
-    if _yield_model is None or _market_model is None:
-        print("Loading ML Models into memory...")
-        BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    # Skip download if the models already exist 
+    if os.path.exists(YIELD_MODEL_PATH) and os.path.exists(MARKET_MODEL_PATH):
+        print("ML models already exist locally. Skipping download.")
+        return
+
+    try:
+        print("Initializing secure connection to Google Cloud Storage")
+        # The client automatically inherits IAM permissions from Cloud Run
+        client = storage.Client() 
+        bucket = client.bucket(BUCKET_NAME)
         
-        try:
-            yield_path = os.path.join(BASE_DIR, "ml_models", "yield_predictor.pkl")
-            market_path = os.path.join(BASE_DIR, "ml_models", "Market_price_predictor.pkl")
-            
-            _yield_model = joblib.load(yield_path)
-            _market_model = joblib.load(market_path)
-            print("✅ Models loaded successfully!")
-        except Exception as e:
-            print(f"⚠️ Warning: Could not load ML models. Error: {e}")
+        # Download Yield Predictor
+        yield_blob = bucket.blob(YIELD_MODEL_FILENAME)
+        yield_blob.download_to_filename(YIELD_MODEL_PATH)
+        print(f"Successfully downloaded {YIELD_MODEL_FILENAME}")
+        
+        # Download Market Forecaster
+        market_blob = bucket.blob(MARKET_MODEL_FILENAME)
+        market_blob.download_to_filename(MARKET_MODEL_PATH)
+        print(f"Successfully downloaded {MARKET_MODEL_FILENAME}")
+        
+    except Exception as e:
+        print(f"CRITICAL ERROR: Failed to retrieve models from cloud storage: {e}")
 
-def get_yield_prediction(features_list) -> float:
-    """Instantly runs the yield prediction."""
-    _load_models()
-    if _yield_model:
-        # Convert list to a 2D numpy array for the model
-        features = np.array([features_list])
-        return float(_yield_model.predict(features))
-    return 20.0 # Fallback if model is missing
+# MEMORY ALLOCATION & LOADING
+def load_ml_model(path):
+    """The system deserializes the model weights into active memory."""
+    try:
+        return joblib.load(path)
+    except Exception as e:
+        print(f" Warning: Failed to load ML asset at {path}. Error: {e}")
+        return None
 
-def get_market_prediction(features_list) -> float:
-    """Instantly runs the market price prediction."""
-    _load_models()
-    if _market_model:
-        features = np.array([features_list])
-        return float(_market_model.predict(features))
-    return 0.0 # Fallback
+# 1. Execute the download protocol
+download_models_from_bucket()
+
+# 2. Load the downloaded models into global variables for the LangChain tools to use
+print("Loading models into active memory")
+yield_model = load_ml_model(YIELD_MODEL_PATH)
+market_model = load_ml_model(MARKET_MODEL_PATH)
+print("Machine Learning Engine Ready.")

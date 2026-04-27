@@ -26,9 +26,7 @@ supabase: Client = create_client(url, key)
 geolocator = Nominatim(user_agent="agribrain_kenya_v1")
 
 # MACHINE LEARNING PIPELINE
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-YIELD_MODEL_PATH = os.path.join(BASE_DIR, "ml_models", "yield_predictor.pkl")
-MARKET_MODEL_PATH = os.path.join(BASE_DIR, "ml_models", "market_forecaster.pkl")
+from models import yield_model,market_model
 
 def load_ml_model(path):
     """The system loads serialized scikit-learn/XGBoost models into active memory."""

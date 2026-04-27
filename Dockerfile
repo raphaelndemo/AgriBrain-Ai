@@ -1,20 +1,22 @@
 FROM python:3.10-slim
 
+# Set the working directory inside the container
 WORKDIR /app
 
+# Install system dependencies required for ML libraries
 RUN apt-get update && apt-get install -y \
     build-essential \
     && rm -rf /var/lib/apt/lists/*
 
-
+# Copy requirements and install Python dependencies
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy all Python scripts and ml models into the container
+# Copy the rest of the application code into the container
 COPY . .
 
-# Open port 7860 so internet traffic can reach the app
-EXPOSE 7860
+# Expose the standard Cloud Run port
+EXPOSE 8080
 
-# The command Google Cloud to start app
-CMD ["python", "-m", "chainlit", "run", "app.py", "--host", "0.0.0.0", "--port", "7860", "--headless"]
+# The dynamic startup command for Cloud Run
+CMD ["sh", "-c", "chainlit run app.py -h 0.0.0.0 -p ${PORT:-8080} --headless"]
