@@ -1,9 +1,36 @@
+# Web Framework & Server
+fastapi
+uvicorn
+
+# HTTP Clients
+httpx
+requests
+
+# Environment Variables
+python-dotenv
+
+# Database
+supabase
+
+# LangChain Core
+langchain
+langchain-core
+langchain-community
+
+# LangChain Google Gemini Integration
+langchain-google-genai
+google-generativeai
+
+# Geocoding
+geopy
+
+# ML & Data
 pandas
 numpy
-sklearn
-python-dotenv
-supabase
+scikit-learn
+joblib
+
+# Web Scraping
 selenium
 beautifulsoup4
 webdriver-manager
-geopy

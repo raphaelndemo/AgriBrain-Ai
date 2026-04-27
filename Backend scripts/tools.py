@@ -7,7 +7,7 @@ from langchain.tools import tool
 from geopy.geocoders import Nominatim
 from supabase import create_client, Client
 from dotenv import load_dotenv
-from backend_engine.location import get_full_location_context # Import internal modules
+from location_context import get_full_location_context 
 
 
 # 1. INITIALIZATION SETUP
