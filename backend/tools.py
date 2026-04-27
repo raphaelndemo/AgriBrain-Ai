@@ -104,9 +104,9 @@ def geocode_location(location_name: str) -> str:
         return f"Geocoding failed: {e}"
 
 @tool
-def location_intelligence_tool(lat: float, lon: float) -> str:
+async def location_intelligence_tool(lat: float, lon: float) -> str:
     """Use this to fetch live Open-Meteo weather and iSDAsoil chemistry (NPK/pH) for a coordinate."""
-    return get_full_location_context(lat, lon)
+    return await get_full_location_context(lat, lon)
 
 @tool
 def crop_projection_tool(commodity: str, acres: float, lat: float, lon: float, market_name: str) -> str:
