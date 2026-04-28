@@ -211,16 +211,18 @@ __marimo__/
 .env.local
 *.pem
 secrets/
+credentials/
 
-# === PYTHON & ENVIRONMENTS ===
+# PYTHON & ENVIRONMENTS
 __pycache__/
 *.py[cod]
 *$py.class
 venv/
 env/
 .venv/
+.DS_Store
 
-# === DATA & MODELS ===
+# DATA & MODELS 
 *.csv
 *.xlsx
 *.json
@@ -228,6 +230,7 @@ AgriBrain_Raw_Data/
 models/*.json
 models/*.pkl
 
-# === CHAINLIT CACHE ===
+# CHAINLIT CACHE 
 .chainlit/
 .pytest_cache/
+.files

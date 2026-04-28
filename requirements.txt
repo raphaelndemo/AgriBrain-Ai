@@ -1,2 +1,16 @@
 pandas
-sklearn
+numpy
+scikit-learn
+python-dotenv
+supabase
+selenium
+beautifulsoup4
+webdriver-manager
+geopy
+requests
+gcloud
+chainlit
+google-generativeai
+langchain
+fastapi
+uvicorn
