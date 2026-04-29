@@ -9,8 +9,9 @@ requests
 # Environment Variables
 python-dotenv
 
-# Database
+# Database & storage
 supabase
+google-cloud-storage
 
 # LangChain Core
 langchain
