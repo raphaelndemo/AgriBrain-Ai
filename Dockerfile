@@ -16,7 +16,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # Expose the standard Cloud Run port
-EXPOSE 8080
+EXPOSE 8000
 
 # The dynamic startup command for Cloud Run
 CMD ["chainlit", "run", "app.py", "--host", "0.0.0.0", "--port", "8000", "--headless"]
