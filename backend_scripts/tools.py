@@ -31,7 +31,7 @@ def mixed_crop_projection_tool(primary_crop: str, secondary_crop: str, total_acr
         secondary_bags = int((base_yield_per_acre * 0.8 * acreage_split * 1000) / 90) 
         
         return (
-            f"s**Mixed Cropping Risk Analysis:**\n"
+            f"** Mixed Cropping Risk Analysis:**\n"
             f"Splitting {total_acres} acres minimizes exposure to the Cobweb phenomenon.\n"
             f"{primary_crop} ({acreage_split} acres): Est. {primary_bags} bags.\n"
             f"{secondary_crop} ({acreage_split} acres): Est. {secondary_bags} bags.\n"
@@ -47,7 +47,7 @@ def find_farm_labor(lat: float, lon: float, task_type: str) -> str:
         pricing = "1,700 KES/ha" if lat < -1.0 else "1,500 KES/ha" 
         
         return (
-            f"👷 **Labor Force Intelligence (10km Radius)**\n"
+            f"**Labor Force Intelligence (10km Radius)**\n"
             f"Task: {task_type}\n"
             f"Regional Market Rate: {pricing}\n"
             f"Found 3 AgriBrain Certified crews available next week."

@@ -59,6 +59,6 @@ jobs:
             SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }}
             BOT_PHONE_NUMBER=${{ secrets.BOT_PHONE_NUMBER }}
             WHATSAPP_TOKEN=${{ secrets.WHATSAPP_TOKEN }}
-            WHATSAPP_PHONE_NUMBER_ID=${{ secrets.WHATSAPP_PHONE_NUMBER_ID }}
+            WHATSAPP_PHONE_ID=${{ secrets.WHATSAPP_PHONE_NUMBER_ID }}
             WHATSAPP_VERIFICATION_TOKEN=${{ secrets.WHATSAPP_VERIFICATION_TOKEN }}
             GOOGLE_API_KEY=${{ secrets.GOOGLE_API_KEY }}

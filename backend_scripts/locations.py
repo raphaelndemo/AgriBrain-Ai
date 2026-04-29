@@ -6,7 +6,7 @@ async def fetch_local_weather(lat: float, lon: float) -> dict:
     Asynchronously fetches current weather and 7-day forecast from Open-Meteo.
     Includes Phase 2 metrics: wind speed (for pesticide drift) and UV index.
     """
-    print(f"🌤️ Fetching weather for coordinates: {lat}, {lon}...")
+    print(f" Fetching weather for coordinates: {lat}, {lon}...")
     
     url = (
         f"https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lon}"
@@ -25,7 +25,7 @@ async def fetch_local_weather(lat: float, lon: float) -> dict:
             current = data.get('current', {})
             daily = data.get('daily', {})
             
-            print("✅ Live weather data secured.")
+            print("Live weather data secured.")
             return {
                 "status": "success",
                 "temperature": current.get('temperature_2m'),
@@ -45,7 +45,7 @@ async def fetch_local_soil(lat: float, lon: float) -> dict:
     Fetches 30m resolution African soil data using the OpenEPI wrapper for iSDAsoil.
     Expanded to pull Nitrogen and Clay content for advanced yield ML.
     """
-    print(f"🌱 Fetching soil data for coordinates: {lat}, {lon}...")
+    print(f" Fetching soil data for coordinates: {lat}, {lon}")
     
     # We ask for pH, total nitrogen, and clay content
     url = f"https://api.openepi.io/soil/property?lat={lat}&lon={lon}&properties=phh2o,nitrogen,clay"
@@ -67,7 +67,7 @@ async def fetch_local_soil(lat: float, lon: float) -> dict:
             except AttributeError:
                 soil_ph, nitrogen, clay = 6.0, 0.15, 30.0 # Safe Kenyan fallbacks
             
-            print("✅ Soil chemistry data secured.")
+            print("Soil chemistry data secured.")
             return {
                 "status": "success",
                 "soil_ph": soil_ph,
@@ -91,12 +91,12 @@ async def get_full_location_context(lat: float, lon: float) -> str:
     )
     
     return (
-        f"🌍 **Live Geospatial Context (Lat: {lat}, Lon: {lon})**\n\n"
-        f"🌤️ **Meteorology:** Temp: {weather.get('temperature')}°C | Humidity: {weather.get('humidity')}%\n"
-        f"💨 **Wind Speed:** {weather.get('wind_speed')} km/h (Note: >15km/h risks pesticide drift)\n"
-        f"🌧️ **Live Rain:** {weather.get('current_rain')} mm | **7-Day Total:** {weather.get('weekly_rain')} mm\n"
-        f"☀️ **Max UV Index:** {weather.get('uv_index')}\n"
-        f"🌱 **Soil Chemistry:** pH {soil.get('soil_ph')}, Nitrogen {soil.get('nitrogen')} g/kg, Clay {soil.get('clay_percentage')}%\n"
+        f" **Live Geospatial Context (Lat: {lat}, Lon: {lon})**\n\n"
+        f" **Meteorology:** Temp: {weather.get('temperature')}°C | Humidity: {weather.get('humidity')}%\n"
+        f" **Wind Speed:** {weather.get('wind_speed')} km/h (Note: >15km/h risks pesticide drift)\n"
+        f" **Live Rain:** {weather.get('current_rain')} mm | **7-Day Total:** {weather.get('weekly_rain')} mm\n"
+        f" **Max UV Index:** {weather.get('uv_index')}\n"
+        f" **Soil Chemistry:** pH {soil.get('soil_ph')}, Nitrogen {soil.get('nitrogen')} g/kg, Clay {soil.get('clay_percentage')}%\n"
     )
 
 # --- TEST THE PARALLEL FUNCTIONS ---
