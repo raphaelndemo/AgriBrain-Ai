@@ -1,7 +1,7 @@
 import asyncio
 import nest_asyncio
 import numpy as np
-from langchain.tools import tool
+from langchain_core.tools import tool
 
 from ml_models.models import yield_model, market_model
 from backend_scripts.locations import get_full_location_context

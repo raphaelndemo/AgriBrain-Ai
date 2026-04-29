@@ -7,8 +7,8 @@ from langchain_classic.memory import ConversationSummaryBufferMemory
 from backend_scripts.tools import AGRICULTURAL_TOOLS 
 from backend_scripts.telemetry import log_telemetry
 
-primary_llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash", temperature=0.3, convert_system_message_to_human=True)
-fallback_llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash", temperature=0.3, convert_system_message_to_human=True)
+primary_llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash", temperature=0.3)
+fallback_llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash", temperature=0.3)
 
 # Compresses older interactions to preserve token context window
 memory = ConversationSummaryBufferMemory(llm=fallback_llm, max_token_limit=1000, memory_key="chat_history", return_messages=True)
