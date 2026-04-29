@@ -51,8 +51,8 @@ jobs:
           gcloud run deploy ${{ env.SERVICE_NAME }} \
             --image $IMAGE_PATH \
             --region ${{ env.REGION }} \
-            --port 7860 \
+            --port 8000 \
             --allow-unauthenticated \
             --memory 2Gi \
             --cpu 1 \
-            --set-env-vars="SUPABASE_URL=${{ secrets.SUPABASE_URL }},SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }},GOOGLE_API_KEY=${{ secrets.GOOGLE_API_KEY }}",BOT_PHONE_NUMBER=${{ secrets.BOT_PHONE_NUMBER }}, WHATSAPP_TOKEN=${{ secrets.WHATSAPP_TOKEN }}, WHATSAPP_PHONE_NUMBER_ID=${{ secrets.WHATSAPP_PHONE_NUMBER_ID }}, WHATSAPP_VERIFICATION_TOKEN=${{ secrets.WHATSAPP_VERIFICATION_TOKEN }} 
+ 
