@@ -17,7 +17,7 @@ BOT_PHONE_NUMBER = os.getenv("BOT_PHONE_NUMBER")
 async def on_start():
     # phone number for verification
     res = await cl.AskUserMessage(
-        content="** HELLO **\n\nEnter your WhatsApp number format: **254700000000** to log in.",
+        content="**HELLO**\n\nEnter your WhatsApp number format: **254700000000** to log in.",
         timeout=120
     ).send()
     
@@ -48,7 +48,7 @@ async def on_start():
             wa_link = f"https://wa.me/{BOT_PHONE_NUMBER}?text=Verify%20{verify_code}"
             
             await cl.Message(
-                content=f"** 2FA Required**\n1. [Click Here to Authenticate via WhatsApp]({wa_link})\n2. Send the auto-filled verification code.\n3. **Type 'Done' here** once you have sent the WhatsApp message."
+                content=f"**2FA Required**\n1. [Click Here to Authenticate via WhatsApp]({wa_link})\n2. Send the auto-filled verification code.\n3. **Type 'Done' here** once you have sent the WhatsApp message."
             ).send()
             
         except Exception as e:
