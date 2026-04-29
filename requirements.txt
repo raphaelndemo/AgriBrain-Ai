@@ -17,6 +17,7 @@ google-cloud-storage
 langchain
 langchain-core
 langchain-community
+langchain-classic
 
 # LangChain Google Gemini Integration
 langchain-google-genai
