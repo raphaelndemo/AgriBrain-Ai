@@ -61,3 +61,4 @@ jobs:
             WHATSAPP_TOKEN=${{ secrets.WHATSAPP_TOKEN }}
             WHATSAPP_PHONE_NUMBER_ID=${{ secrets.WHATSAPP_PHONE_NUMBER_ID }}
             WHATSAPP_VERIFICATION_TOKEN=${{ secrets.WHATSAPP_VERIFICATION_TOKEN }}
+            GOOGLE_API_KEY=${{ secrets.GOOGLE_API_KEY }}
