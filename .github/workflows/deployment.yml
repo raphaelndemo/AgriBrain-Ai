@@ -55,4 +55,5 @@ jobs:
             --allow-unauthenticated \
             --memory 2Gi \
             --cpu 1 \
+            ---timeout 300
  
