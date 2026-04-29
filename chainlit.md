@@ -1,14 +1,6 @@
-# Welcome to Chainlit! 🚀🤖
-
-Hi there, Developer! 👋 We're excited to have you on board. Chainlit is a powerful tool designed to help you prototype, debug and share applications built on top of LLMs.
-
-## Useful Links 🔗
-
-- **Documentation:** Get started with our comprehensive [Chainlit Documentation](https://docs.chainlit.io) 📚
-- **Discord Community:** Join our friendly [Chainlit Discord](https://discord.gg/k73SQ3FyUh) to ask questions, share your projects, and connect with other developers! 💬
-
-We can't wait to see what you create with Chainlit! Happy coding! 💻😊
-
-## Welcome screen
-
-To modify the welcome screen, edit the `chainlit.md` file at the root of your project. If you do not want a welcome screen, just leave this file empty.
+<div style="margin-top: 10vh; margin-bottom: 40px; padding-left: 20px;">
+    <h2 style="font-weight: 500; color: #E3E3E3; font-size: 1.5rem; margin-bottom: 8px;">Hi Sylvester</h2>
+    <h1 style="font-weight: 600; color: #FFFFFF; font-size: 2.8rem; line-height: 1.2;">
+        I'm ready to help you plan, plant,<br>bring ideas to life & more.
+    </h1>
+</div>

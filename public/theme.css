@@ -1,0 +1,26 @@
+.MuiToolbar-root { display: none !important; }
+
+.starter-btn {
+    background-color: transparent !important;
+    border: none !important;
+    justify-content: flex-start !important;
+    padding: 12px 16px !important;
+    border-radius: 12px !important;
+    transition: background-color 0.2s ease;
+}
+.starter-btn:hover { background-color: rgba(255, 255, 255, 0.08) !important; }
+
+#chat-input {
+    background-color: #1E1E1E !important;
+    border-radius: 24px !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
+    padding: 12px 20px !important;
+}
+
+.input-area {
+    margin-bottom: 2vh !important;
+    max-width: 800px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+}
