@@ -19,4 +19,4 @@ COPY . .
 EXPOSE 8080
 
 # The dynamic startup command for Cloud Run
-CMD ["chainlit", "run", "app.py", "--host", "0.0.0.0", "--port", "8080", "--headless"]
+CMD ["chainlit", "run", "app.py", "--host", "0.0.0.0", "--port", "8000", "--headless"]
