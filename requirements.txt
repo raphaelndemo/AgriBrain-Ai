@@ -27,10 +27,19 @@ geopy
 # ML & Data
 pandas
 numpy
-scikit-learn
+scikit-learn==1.8.0
 joblib
 
 # Web Scraping
 selenium
 beautifulsoup4
 webdriver-manager
+
+# Chainlit for UI
+chainlit
+
+# machine learning model
+xgboost
+
+# encoding
+chardet
