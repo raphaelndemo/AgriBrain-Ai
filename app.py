@@ -4,6 +4,22 @@ from datetime import datetime, timezone
 from dotenv import load_dotenv
 import chainlit as cl
 
+# message requests and linkage
+from chainlit.server import app as chainlit_app
+from fastapi import Request, requests, HTTPException
+
+@chainlit_app.get("/webhook")
+async def verify_webhook(request: Request):
+    mode = request.query_params.get("hub.mode")
+    token = request.query_params.get("hub.verify_token")
+    challenge = request.query_params.get("hub.challenge")
+    expected_token = os.getenv("WHATSAPP_VERIFICATION_TOKEN")
+    
+    if mode == "subscribe" and token == expected_token:
+        return int(challenge)
+    raise HTTPException(status_code=403, detail="Forbidden")
+
+
 # Import internal backend routing
 from backend_scripts.router import process_agribrain_message
 from backend_scripts.telemetry import supabase 

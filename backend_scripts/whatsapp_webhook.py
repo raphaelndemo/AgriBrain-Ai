@@ -11,7 +11,7 @@ load_dotenv()
 
 app = FastAPI(title="AgriBrain Webhook Service")
 
-VERIFY_TOKEN = os.getenv("WHATSAPP_VERIFICATION_TOKEN", "agribrain_secure_token")
+VERIFY_TOKEN = os.getenv("WHATSAPP_VERIFICATION_TOKEN")
 WHATSAPP_TOKEN = os.getenv("WHATSAPP_TOKEN")
 PHONE_NUMBER_ID = os.getenv("WHATSAPP_PHONE_ID")
 
