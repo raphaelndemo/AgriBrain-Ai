@@ -53,7 +53,7 @@ async def run_scraper():
         page = await context.new_page()
  
         try:
-            await page.goto("https://kamis.kilimo.go.ke/site/market", wait_until="networkidle", timeout=60000)
+            await page.goto("https://kamis.kilimo.go.ke/site/market", wait_until="domcontentloaded", timeout=60000)
             
             commodities_to_scrape = await page.evaluate("""() => {
                 let selectMenu = document.querySelector('select[name="product"]');
