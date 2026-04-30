@@ -3,7 +3,7 @@ name: Fetching Daily Market Prices from Kiamis
 on:
   schedule:
     # 23:00 UTC every day (2:00 AM East Africa Time)
-    - cron: '0 20 * * *'
+    - cron: '0 23 * * *'
   
   # manually click run for out-of-schedule runs
   workflow_dispatch: 

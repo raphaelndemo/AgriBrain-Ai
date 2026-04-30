@@ -37,7 +37,7 @@ def process_agribrain_message(user_phone: str, message: str) -> str:
     try:
         ai_text = primary_executor.invoke({"input": message}).get("output", "Error resolving output.")
     except Exception as e:
-        print(f"Primary LLM Failed: {e}. Executing Fallback (Flash)...")
+        print(f"Primary LLM Failed: {e}. Executing Fallback (Flash)")
         try:
             ai_text = fallback_executor.invoke({"input": message}).get("output", "Error resolving output.")
         except Exception:

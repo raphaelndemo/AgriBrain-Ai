@@ -21,16 +21,20 @@ async def on_start():
         timeout=120
     ).send()
     
-    if res:
-        phone_number = res['output'].strip()
-        cl.user_session.set("user_phone", phone_number)
+    if not res:
+        return
+    phone_number = res['output'].strip()
+    cl.user_session.set("user_phone", phone_number)
         
-        try:
-            # Check DB synchronously (Fast enough that it won't break the UI)
-            profile_check = supabase.table("user_profiles").select("is_verified, verified_at").eq("phone", phone_number).execute()
+    try:
+        # Check database 
+        profile_check = supabase.table("user_profiles").select("is_verified, verified_at").eq("phone", phone_number).execute()
             
-            if profile_check.data and profile_check.data.get("is_verified"):
-                verified_at_str = profile_check.data.get("verified_at")
+        if profile_check.data and len(profile_check.data) > 0:
+            profile = profile_check.data[0]
+            
+            if profile.get("is_verified"):
+                verified_at_str = profile.get("verified_at")
                 if verified_at_str:
                     verified_at = datetime.fromisoformat(verified_at_str.replace('Z', '+00:00'))
                     days_since_verification = (datetime.now(timezone.utc) - verified_at).days
@@ -51,8 +55,8 @@ async def on_start():
                 content=f"**2FA Required**\n1. [Click Here to Authenticate via WhatsApp]({wa_link})\n2. Send the auto-filled verification code.\n3. **Type 'Done' here** once you have sent the WhatsApp message."
             ).send()
             
-        except Exception as e:
-            await cl.Message(content=f"Connection Error. Details: {e}").send()
+    except Exception as e:
+        await cl.Message(content=f"Connection Error. Details: {e}").send()
 
 
 @cl.on_message
@@ -67,7 +71,7 @@ async def on_message(message: cl.Message):
                 
                 if check.data and check.data[0].get("is_verified") == True:
                     cl.user_session.set("is_verified", True)
-                    await cl.Message(content="**Login Successful!** . What do you need?").send()
+                    await cl.Message(content="**Login Successful!** . How can I be of help to you today?").send()
                 else:
                     await cl.Message(content="I haven't received the verification code yet. Please ensure you sent the WhatsApp message, then type 'Done' again.").send()
             except Exception as e:

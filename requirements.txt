@@ -36,6 +36,7 @@ joblib
 selenium
 beautifulsoup4
 webdriver-manager
+playwright
 
 # Chainlit for UI
 chainlit
