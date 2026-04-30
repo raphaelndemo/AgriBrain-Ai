@@ -83,7 +83,8 @@ async def run_scraper():
             print(f"Scraping: {current_crop}")
             
             try:
-                await page.goto(target_url, wait_until="networkidle", timeout=60000)
+                await page.goto(target_url, wait_until="domcontentloaded", timeout=60000)
+                await page.wait_for_selector("table tbody tr", timeout=30000)
                 
                 # Extract the table rows directly from the browser 
                 rows_data = await page.evaluate("""() => {
@@ -150,7 +151,7 @@ async def run_scraper():
                 print(f"Failed to scrape {current_crop} Error: {str(e)[:70]}")
 
         await browser.close()
-        print("Daily Market Scraping Complete!")
+        print("Daily Market Scraping Complete")
 
 if __name__ == "__main__":
     asyncio.run(run_scraper())
