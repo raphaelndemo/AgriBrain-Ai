@@ -1,10 +1,10 @@
 # AgriBrain-Ai
-AI-powered agricultural intelligence platform built for smallholder farmers in Kenya.
-# 🌾 AgriBrain
 
 **AgriBrain** is an end-to-end agritech recommendation engine that helps Kenyan farmers optimize crop selection by combining real-time soil, weather, yield, and market data.
 
 It actively combats the **"Cobweb Phenomenon"** — the cycle of oversupply and price crashes caused by reliance on past experience and historical prices.
+
+The platform helps reduce the aspect of guesswork in decision making on what to crop and offers alternative profitable crops that the farmer could plant.
 
 > 🔗 **Live Demo:** https://your-demo-link-here.netlify.app *(Add link when deployed)*
 
@@ -99,8 +99,6 @@ It helps farmers choose high-demand, ecologically viable crops that maximize pro
 
 ---
 
-## 🤖 Models & Algorithms
-
 ### 🌱 Yield Prediction
 - Ensemble: **XGBoost + Random Forest + Prophet**
 - Goal: Predict crop yield (kg/ha)
@@ -136,6 +134,17 @@ Example system output:
     }
 
 ---
+
+## 🤖 Models Results and Intepratation
+### Yield Prediction results
+<img width="251" height="220" alt="Yield Prediction Results" src="https://github.com/user-attachments/assets/a7dbee13-c7b3-4309-816e-54d6825cd323" />
+
+The results predict how off our yield predictions are from the actual yield. Therefore, we will consider the moel that has the least value in its MAE and RSME. From the model results, we are checked how off our model is in terms of yield prediction. The stacked model was the best since it has the least errors in yield prediction compared to the other models.
+
+### Price prediction results
+<img width="312" height="218" alt="price prediction results" src="https://github.com/user-attachments/assets/93137ab1-9a46-463b-9216-968566d9360e" />
+
+The stacked model is among those with the best overall balance of MAE and RMSE making it the most reliable model for market price prediction across Kenya's top commodities.
 
 ## ⚙️ Setup & Installation
 
@@ -180,15 +189,29 @@ Example system output:
 - **Modular Design:** Easy integration of weather/soil APIs  
 
 ---
+## Real World Applications
+- AgriBrain supports multiple use cases:
+- crop planning and selection
+- land investment analysis
+- disease detection through images
+- market optimization strategies
+- Each workflow is context-aware and data-driven.
 
 ## ⚠️ Known Limitations
-
-- Uses yearly FAOSTAT data (low temporal resolution)  
-- No real-time soil or weather data yet  
-- Price models require frequent retraining  
-- Limited crop coverage  
+- FAOSTAT data is yearly, limiting real-time responsiveness
+- ARIMA and SARIMA do not handle multivariate inputs well
+- Price predictions limited to commodities covered by KAMIS
+- System does not yet account for pest and disease outbreaks
+- Model accuracy depends heavily on data quality and completeness
 
 ---
+## Future Recommendations
+- Automated location detection via mobile for hyper-local recommendations
+- Integration of satellite and remote sensing data
+- Labor marketplace integration
+- Mixed cropping optimization
+- Expansion of KAMIS dataset to cover more counties
+- Advanced environmental analytics using live weather and soil sensor data
 
 ## 🛣️ Roadmap
 
