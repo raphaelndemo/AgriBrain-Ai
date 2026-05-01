@@ -6,11 +6,11 @@ It actively combats the **"Cobweb Phenomenon"** — the cycle of oversupply and 
 
 The platform helps reduce the aspect of guesswork in decision making on what to crop and offers alternative profitable crops that the farmer could plant.
 
-> 🔗 **Live Demo:** https://your-demo-link-here.netlify.app *(Add link when deployed)*
+>  **Live Demo:** https://your-demo-link-here.netlify.app *(Add link when deployed)*
 
 ---
 
-## 📌 Table of Contents
+##  Table of Contents
 
 - [Overview](#-overview)
 - [System Architecture](#-system-architecture)
@@ -34,7 +34,7 @@ AgriBrain breaks the traditional cycle of guesswork in Kenyan agriculture by del
 
 It helps farmers choose high-demand, ecologically viable crops that maximize profitability while supporting national food security.
 
-### ✅ What the system delivers:
+###  What the system delivers:
 
 | Output | Description |
 |--------|------------|
@@ -46,7 +46,7 @@ It helps farmers choose high-demand, ecologically viable crops that maximize pro
 
 ---
 
-## 🏗️ System Architecture
+## System Architecture
 
     Farmer Input (Location, Soil, Season, Preferences)
             │
@@ -74,7 +74,7 @@ It helps farmers choose high-demand, ecologically viable crops that maximize pro
 
 ---
 
-## 📊 Datasets
+##  Datasets
 
 | Dataset | Source | Type | Role |
 |--------|--------|------|------|
@@ -83,12 +83,12 @@ It helps farmers choose high-demand, ecologically viable crops that maximize pro
 | Market Prices | KAMIS | Daily | Wholesale & retail prices |
 | Macro Indicators | FAOSTAT | Yearly | Economic/agricultural indicators |
 
-> 📁 Raw files are stored in `csvfiles/`  
-> 📦 Processed outputs are saved as clean DataFrames
+>  Raw files are stored in `csvfiles/`  
+> Processed outputs are saved as clean DataFrames
 
 ---
 
-## 📓 Notebook Pipeline
+##  Notebook Pipeline
 
 | # | Notebook | Description |
 |---|----------|------------|
@@ -99,16 +99,16 @@ It helps farmers choose high-demand, ecologically viable crops that maximize pro
 
 ---
 
-### 🌱 Yield Prediction
+###  Yield Prediction
 - Ensemble: **XGBoost + Random Forest + Prophet**
 - Goal: Predict crop yield (kg/ha)
 
-### 💰 Price Forecasting
+###  Price Forecasting
 - Ensemble: **XGBoost + Random Forest + ARIMA + Prophet**
 - Goal: Forecast future market prices
 - Metrics: MAE, RMSE
 
-### 📈 Market Intelligence
+###  Market Intelligence
 - **Supply-Demand Balance:**
   (Production + Imports) - (Food + Feed + Exports + Losses)
 
@@ -119,7 +119,7 @@ It helps farmers choose high-demand, ecologically viable crops that maximize pro
 
 ---
 
-## 📤 Key Outputs
+## Key Outputs
 
 Example system output:
 
@@ -135,7 +135,7 @@ Example system output:
 
 ---
 
-## 🤖 Models Results and Intepratation
+##  Models Results and Intepratation
 ### Yield Prediction results
 <img width="251" height="220" alt="Yield Prediction Results" src="https://github.com/user-attachments/assets/a7dbee13-c7b3-4309-816e-54d6825cd323" />
 
@@ -148,17 +148,17 @@ The stacked model is among those with the best overall balance of MAE and RMSE m
 
 ## ⚙️ Setup & Installation
 
-### ✅ Prerequisites
+###  Prerequisites
 - Python 3.9+
 - Jupyter Notebook
 
-### 📦 Install Dependencies
+###  Install Dependencies
 
     pip install pandas numpy scikit-learn xgboost prophet statsmodels matplotlib seaborn joblib
 
 ---
 
-## 🚀 Usage
+##  Usage
 
     import joblib
     import pandas as pd
@@ -169,7 +169,7 @@ The stacked model is among those with the best overall balance of MAE and RMSE m
 
 ---
 
-## 📁 Project Structure
+##  Project Structure
 
     AgriBrain/
     ├── csvfiles/                    # Raw datasets (FAOSTAT & KAMIS)
@@ -181,7 +181,7 @@ The stacked model is among those with the best overall balance of MAE and RMSE m
 
 ---
 
-## 🧠 Key Design Decisions
+##  Key Design Decisions
 
 - **Ensemble Modeling:** Combines ML + time-series models for robustness  
 - **Market Balance Metric:** Captures real supply-demand dynamics  
@@ -197,7 +197,7 @@ The stacked model is among those with the best overall balance of MAE and RMSE m
 - market optimization strategies
 - Each workflow is context-aware and data-driven.
 
-## ⚠️ Known Limitations
+##  Known Limitations
 - FAOSTAT data is yearly, limiting real-time responsiveness
 - ARIMA and SARIMA do not handle multivariate inputs well
 - Price predictions limited to commodities covered by KAMIS
