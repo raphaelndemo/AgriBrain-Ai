@@ -1,16 +1,48 @@
+# Web Framework & Server
+fastapi
+uvicorn
+
+# HTTP Clients
+httpx
+requests
+
+# Environment Variables
+python-dotenv
+
+# Database & storage
+supabase
+google-cloud-storage
+
+# LangChain Core
+langchain
+langchain-core
+langchain-community
+langchain-classic
+
+# LangChain Google Gemini Integration
+langchain-google-genai
+google-generativeai
+
+# Geocoding
+geopy
+
+# ML & Data
 pandas
 numpy
-scikit-learn
-python-dotenv
-supabase
+scikit-learn==1.8.0
+joblib
+
+# Web Scraping
 selenium
 beautifulsoup4
 webdriver-manager
-geopy
-requests
-gcloud
+playwright
+
+# Chainlit for UI
 chainlit
-google-generativeai
-langchain
-fastapi
-uvicorn
+
+# machine learning model
+xgboost
+
+# encoding
+chardet

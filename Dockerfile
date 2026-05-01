@@ -1,4 +1,4 @@
-FROM python:3.10-slim
+FROM python:3.12-slim
 
 # Set the working directory inside the container
 WORKDIR /app
@@ -16,7 +16,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # Expose the standard Cloud Run port
-EXPOSE 8080
+EXPOSE 8000
 
 # The dynamic startup command for Cloud Run
-CMD ["sh", "-c", "chainlit run app.py -h 0.0.0.0 -p ${PORT:-8080} --headless"]
+CMD ["python", "-m", "chainlit", "run", "app.py", "--host", "0.0.0.0", "--port", "8000", "--headless"]
