@@ -228,7 +228,6 @@ env/
 *.json
 AgriBrain_Raw_Data/
 models/*.json
-models/*.pkl
 
 # CHAINLIT CACHE 
 .chainlit/

@@ -1,62 +1,33 @@
 import os
 import hashlib
-from datetime import datetime
-from supabase import create_client, Client
+import asyncio
+import threading
 from dotenv import load_dotenv
+from supabase import create_client, Client
 
-# Connect to database
 load_dotenv()
+
 supabase: Client = create_client(os.getenv("SUPABASE_URL"), os.getenv("SUPABASE_ANON_KEY"))
 
-def clean_phone_number(raw_id: str) -> str:
-    """Makes sure the phone number is exactly 10 digits starting with 07 or 01."""
-    if raw_id == None or raw_id == "":
-        return "0000000000"
-    
-    # Remove WhatsApp text and country code
-    clean_id = raw_id.replace("whatsapp:", "")
-    clean_id = clean_id.replace("+254", "0")
-    clean_id = clean_id.replace("254", "0")
-    clean_id = clean_id.strip()
-    
-    # Check if it matches our database rules
-    if len(clean_id) == 10 and (clean_id.startswith("07") or clean_id.startswith("01")):
-        return clean_id
-    else:
-        return "0000000000"
+def log_telemetry(phone: str, user_intent: str, ai_response: str):
+    """Safely logs telemetry whether running in sync tests or async servers."""
+    hashed_id = hashlib.sha256(phone.encode()).hexdigest()[:10]
 
-def extract_advised_action(bot_reply: str) -> str:
-    """Reads the bot's reply to guess what action was taken."""
-    reply_lower = bot_reply.lower()
-    
-    if "forward contract" in reply_lower or "twiga" in reply_lower:
-        return "Forward Contract"
-    elif "loan" in reply_lower or "hustler fund" in reply_lower:
-        return "Financial Relief"
-    elif "kibarua" in reply_lower or "agent" in reply_lower:
-        return "Labor Dispatched"
-    else:
-        return "General Consultation"
+    def _insert_log():
+        try:
+            supabase.table("agribrain_chatlogs").insert({
+                "user_phone": hashed_id,
+                "user_intent": user_intent,
+                "bot_response": ai_response
+            }).execute()
+            print("Telemetry logged successfully.")
+        except Exception as e:
+            print(f"Telemetry Pipeline Error: {e}")
 
-async def log_interaction_to_supabase(session_id: str, user_msg: str, bot_reply: str, location_name: str = "Unknown"):
-    """Saves the chat history to the database."""
+    # Check if an event loop exists. If yes, use it. If no, use a basic Thread.
     try:
-        safe_phone = clean_phone_number(session_id)
-        advised_action = extract_advised_action(bot_reply)
-        
-        # Prepare the data dictionary
-        payload = {
-            "user_phone": safe_phone,
-            "user_message": user_msg,
-            "bot_response": bot_reply,
-            "advised_action_taken": advised_action,
-            "location_name": location_name,
-            "chat_timestamp": datetime.utcnow().isoformat()
-        }
-        
-        # Insert into the database
-        supabase.table('agribrain_chatlogs').insert(payload).execute()
-        print(f"Chat logged successfully for: {safe_phone}")
-        
-    except Exception as e:
-        print(f"Error saving chat log: {e}")
+        loop = asyncio.get_running_loop()
+        loop.run_in_executor(None, _insert_log)
+    except RuntimeError:
+        # No event loop (e.g., running raw test.py). Use a standard thread.
+        threading.Thread(target=_insert_log).start()
