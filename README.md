@@ -28,7 +28,7 @@ The platform helps reduce the aspect of guesswork in decision making on what to 
 
 ---
 
-## 🌍 Overview
+##  Overview
 
 AgriBrain breaks the traditional cycle of guesswork in Kenyan agriculture by delivering **data-driven crop recommendations**.
 
@@ -146,7 +146,7 @@ The results predict how off our yield predictions are from the actual yield. The
 
 The stacked model is among those with the best overall balance of MAE and RMSE making it the most reliable model for market price prediction across Kenya's top commodities.
 
-## ⚙️ Setup & Installation
+##  Setup & Installation
 
 ###  Prerequisites
 - Python 3.9+
