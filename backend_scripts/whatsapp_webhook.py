@@ -79,7 +79,7 @@ async def handle_whatsapp_message(request: Request):
         entry = data['entry'][0]['changes'][0]['value']
         
         if 'messages' in entry:
-            msg_obj = entry['messages']
+            msg_obj = entry['messages'][0]
             sender_phone = msg_obj['from']
             msg_type = msg_obj.get('type')
             

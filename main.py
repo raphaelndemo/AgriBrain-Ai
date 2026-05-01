@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from pydantic import BaseModel, Field
+from backend_scripts.whatsapp_webhook import webhook_router
 
 app = FastAPI(
     title="AgriBrain API",
@@ -47,3 +48,6 @@ def predict(data: FarmInput):
             "soil_moisture": data.soil_moisture
         }
     }
+
+# Mounting our webhook correctly
+app.include_router(webhook_router)

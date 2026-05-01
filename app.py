@@ -7,7 +7,7 @@ import chainlit as cl
 # message requests and linkage
 from chainlit.server import app as chainlit_app
 from backend_scripts.whatsapp_webhook import webhook_router
-chainlit_app.include_router(webhook_router, prefix="/webhook")
+chainlit_app.include_router(webhook_router)
 
 
 # Import internal backend routing
