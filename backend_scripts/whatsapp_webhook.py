@@ -65,7 +65,7 @@ async def verify_webhook(request: Request):
 
     if mode == "subscribe" and token == VERIFY_TOKEN:
         print("Webhook verified successfully!")
-        return int(challenge)
+        return Response(content=challenge, media_type="text/plain")
     
     raise HTTPException(status_code=403, detail="Forbidden")
 
