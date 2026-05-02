@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from pydantic import BaseModel, Field
 from backend_scripts.whatsapp_webhook import webhook_router
+from chainlit.server import app as chainlit_app
 
 app = FastAPI(
     title="AgriBrain API",
@@ -51,3 +52,6 @@ def predict(data: FarmInput):
 
 # Mounting our webhook correctly
 app.include_router(webhook_router)
+
+# Mount Chainlit UI at /chat
+app.mount("/chat", chainlit_app)

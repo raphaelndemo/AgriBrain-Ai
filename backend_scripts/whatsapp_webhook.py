@@ -13,6 +13,7 @@ load_dotenv()
 # Initialize the Router to plug into Chainlit
 webhook_router = APIRouter()
 
+
 VERIFY_TOKEN = os.getenv("WHATSAPP_VERIFICATION_TOKEN")
 WHATSAPP_TOKEN = os.getenv("WHATSAPP_TOKEN")
 PHONE_NUMBER_ID = os.getenv("WHATSAPP_PHONE_NUMBER_ID") 
@@ -65,7 +66,7 @@ async def verify_webhook(request: Request):
 
     if mode == "subscribe" and token == VERIFY_TOKEN:
         print("Webhook verified successfully!")
-        return int(challenge)
+        return Response(content=challenge, media_type="text/plain")
     
     raise HTTPException(status_code=403, detail="Forbidden")
 
