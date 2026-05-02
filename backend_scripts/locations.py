@@ -37,7 +37,7 @@ async def fetch_local_weather(lat: float, lon: float) -> dict:
             }
             
     except httpx.HTTPError as e:
-        print(f"❌ Weather API Error: {e}")
+        print(f"Weather API Error: {e}")
         return {"status": "error", "message": str(e)}
 
 async def fetch_local_soil(lat: float, lon: float) -> dict:
@@ -76,7 +76,7 @@ async def fetch_local_soil(lat: float, lon: float) -> dict:
             }
             
     except httpx.HTTPError as e:
-        print(f"❌ Soil API Error: {e}")
+        print(f" Soil API Error: {e}")
         return {"status": "fallback", "soil_ph": 6.0, "nitrogen": 0.15, "clay_percentage": 30.0}
 
 async def get_full_location_context(lat: float, lon: float) -> str:
@@ -99,7 +99,7 @@ async def get_full_location_context(lat: float, lon: float) -> str:
         f" **Soil Chemistry:** pH {soil.get('soil_ph')}, Nitrogen {soil.get('nitrogen')} g/kg, Clay {soil.get('clay_percentage')}%\n"
     )
 
-# --- TEST THE PARALLEL FUNCTIONS ---
+# TEST THE PARALLEL FUNCTIONS 
 if __name__ == "__main__":
     test_lat, test_lon = -1.1018, 37.0144 
     print("\n--- INITIATING PARALLEL SENSORY TEST ---")
