@@ -3,7 +3,7 @@ name: Fetching Daily Market Prices from Kiamis
 on:
   schedule:
     # 23:00 UTC every day (2:00 AM East Africa Time)
-    - cron: '0 20 * * *'
+    - cron: '0 23 * * *'
   
   # manually click run for out-of-schedule runs
   workflow_dispatch: 
@@ -25,8 +25,11 @@ jobs:
       - name: Install Dependencies
         run: |
           python -m pip install --upgrade pip
-          # Installs selenium, beautifulsoup4, pandas, and supabase from your list
           pip install -r requirements.txt 
+      
+      - name: playwright broswer
+        run: |
+          playwright install chromium  
 
       - name: Execute Market Price Script
         env:

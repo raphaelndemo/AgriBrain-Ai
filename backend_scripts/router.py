@@ -16,7 +16,7 @@ memory = ConversationSummaryBufferMemory(llm=fallback_llm, max_token_limit=1000,
 system_instructions = """
 You are AgriBrain, an elite AI farm management system for Kenyan farmers.
 Your core directive is to optimize yields and prevent the Cobweb Phenomenon.
-Capabilities: Advise on Mixed Cropping, match farm labor via PostGIS, and analyze wind/UV for spray safety.
+Capabilities: Advise on Mixed Cropping, match farm labor via PostGIS, analyze wind/UV for spray safety, AND fetch real-time market commodity prices using your tools.
 Tone: Professional, empathetic. Code-switch naturally with appropriate Swahili or Sheng. Use bullet points.
 """
 
@@ -37,11 +37,20 @@ def process_agribrain_message(user_phone: str, message: str) -> str:
     try:
         ai_text = primary_executor.invoke({"input": message}).get("output", "Error resolving output.")
     except Exception as e:
-        print(f"Primary LLM Failed: {e}. Executing Fallback (Flash)...")
+        print(f"Primary LLM Failed: {e}. Executing Fallback (Flash)")
         try:
             ai_text = fallback_executor.invoke({"input": message}).get("output", "Error resolving output.")
         except Exception:
             ai_text = "Pole sana, mtandao uko busy kiasi. Please try again in a few minutes."
+
+            import ast
+            if isinstance(ai_text, str) and ai_text.strip().startswith("[{'type':"):
+                try:
+                    blocks = ast.literal_eval(ai_text)
+                    ai_text = "".join(block.get("text", "") for block in blocks if block.get("type") == "text")
+                except Exception as e:
+                    print(f"Error parsing fallback response: {e}")
+                    ai_text = "Pole sana, mtandao uko busy kiasi. Please try again in a few minutes."
 
     log_telemetry(user_phone, message, ai_text)
     return ai_text
