@@ -1,10 +1,6 @@
 # AgriBrain-Ai
 
-**AgriBrain** is an end-to-end agritech recommendation engine that helps Kenyan farmers optimize crop selection by combining real-time soil, weather, yield, and market data.
-
-It actively combats the **"Cobweb Phenomenon"** — the cycle of oversupply and price crashes caused by reliance on past experience and historical prices.
-
-The platform helps reduce the aspect of guesswork in decision making on what to crop and offers alternative profitable crops that the farmer could plant.
+**AgriBrain-AI** is an advanced, multimodal artificial intelligence assistant engineered specifically for Kenyan farmers. By combining Large Language Models (Gemini 2.5 Flash), Machine Learning yield projections, and real-time PostGIS spatial data, it provides hyper-local agricultural intelligence to optimize yields, prevent market over-saturation (the "Cobweb Phenomenon"), and route local labor.
 
 >  **Live Demo:** https://agribrain-ai-1022818522174.africa-south1.run.app/ 
 
@@ -13,7 +9,8 @@ The platform helps reduce the aspect of guesswork in decision making on what to 
 ##  Table of Contents
 
 - [Overview](#-overview)
-- [System Architecture](#-system-architecture)
+- [Key Features](#-key-feautures)
+- [Achitectural Layers](#-achitectural-layers)
 - [Datasets](#-datasets)
 - [Notebook Pipeline](#-notebook-pipeline)
 - [Models & Algorithms](#-models--algorithms)
@@ -22,7 +19,6 @@ The platform helps reduce the aspect of guesswork in decision making on what to 
 - [Usage](#-usage)
 - [Project Structure](#-project-structure)
 - [Key Design Decisions](#-key-design-decisions)
-- [Roadmap](#-roadmap)
 - [License](#-license)
 
 ---
@@ -33,45 +29,23 @@ AgriBrain breaks the traditional cycle of guesswork in Kenyan agriculture by del
 
 It helps farmers choose high-demand, ecologically viable crops that maximize profitability while supporting national food security.
 
-###  What the system delivers:
-
-| Output | Description |
-|--------|------------|
-| **Crop Recommendations** | Top crops with predicted yield and market potential |
-| **Market Signal** | Shortage / Balanced / Oversupply risk |
-| **Yield Forecast** | Predicted yield (kg/ha) using ensemble models |
-| **Price Forecast** | Future price trends using time-series ensembles |
-| **Profitability Insight** | Estimated revenue potential |
+### Key Features
+Multimodal AI Diagnostics: Farmers can upload images of diseased crops via web or WhatsApp. The system dynamically compresses and analyzes the images using Gemini 2.5 Flash to provide instant agronomic advice.
+PostGIS Geospatial Routing: Utilizes advanced SQL spatial queries to instantly connect farmers with agricultural laborers (vibarua / area agents) and agrovets within a 10km radius of their precise GPS coordinates.
+Predictive ML Yield Engine: A Random Forest Regressor trained on 19 complex macroeconomic and agrochemical features (including CPI, exchange rates, and lagged yields) to calculate precise harvest projections.
+Cascading Market Arbitrage: Queries live KAMIS market databases to calculate local crop saturation. Features a self-healing geographical fallback (Town ➡️ County ➡️ National) to ensure farmers always receive actionable pricing data.
+Privacy-First Telemetry: Automated tracking of AI interactions with programmatic phone number masking (e.g., 0712***215) to strictly adhere to Kenyan Data Protection Act (KDPA) and GDPR regulations.
 
 ---
 
-## System Architecture
-
-    Farmer Input (Location, Soil, Season, Preferences)
-            │
-            ▼
-    ┌──────────────────────────────────────────────┐
-    │ Stage 1 — Yield Prediction Engine            │
-    │ Ensemble: XGBoost + Random Forest + Prophet  │
-    └──────────────────────┬───────────────────────┘
-                           │ Predicted Yield
-                           ▼
-    ┌──────────────────────────────────────────────┐
-    │ Stage 2 — Market Intelligence Engine         │
-    │ Supply/Demand Balance + Stock Deficit        │
-    │ → Market Signal (Shortage / Oversupply)      │
-    └──────────────────────┬───────────────────────┘
-                           │ Enriched Crop Profiles
-                           ▼
-    ┌──────────────────────────────────────────────┐
-    │ Stage 3 — Price Forecasting Engine           │
-    │ Ensemble: XGBoost + RF + ARIMA + Prophet     │
-    └──────────────────────┬───────────────────────┘
-                           │ Price & Profitability
-                           ▼
-            Final Recommendation Output
-
----
+## Architectural Layers
+AgriBrain-AI is built on a highly resilient, loosely coupled Microservice Architecture:
+The Interface Layer (Microservices):
+Web UI (app.py): A standalone Chainlit application featuring secure phone-based authentication and text-to-coordinate geocoding (via geopy).
+Meta Webhook (whatsapp_webhook.py): An isolated FastAPI node that securely ingests Meta Graph API payloads, processes native GPS pins, and downloads binary image bytes.
+The Intelligence Layer (router.py): The LangChain AgentExecutor. It holds the conversational memory, standardizes multimodal inputs, and orchestrates the suite of agricultural tools.
+The Data Layer (Supabase/PostgreSQL): A strictly normalized relational database. Separates permanent user state (user_profiles with Lat/Lon) from time-series event logs (agribrain_chatlogs), while utilizing PostGIS extensions for spatial mapping (worker_profiles).
+    
 
 ##  Datasets
 
@@ -204,15 +178,8 @@ The stacked model is among those with the best overall balance of MAE and RMSE m
 - Model accuracy depends heavily on data quality and completeness
 
 ---
-## Future Recommendations
-- Automated location detection via mobile for hyper-local recommendations
-- Integration of satellite and remote sensing data
-- Labor marketplace integration
-- Mixed cropping optimization
-- Expansion of KAMIS dataset to cover more counties
-- Advanced environmental analytics using live weather and soil sensor data
 
-## 🛣️ Roadmap
+## Roadmap
 
 - [ ] Integrate real-time weather & soil data  
 - [ ] Add LLM-powered market analysis agent  
@@ -223,7 +190,7 @@ The stacked model is among those with the best overall balance of MAE and RMSE m
 
 ---
 
-## 📜 License
+## License
 
 This project is for academic and research purposes.
 
