@@ -6,7 +6,7 @@ It actively combats the **"Cobweb Phenomenon"** — the cycle of oversupply and 
 
 The platform helps reduce the aspect of guesswork in decision making on what to crop and offers alternative profitable crops that the farmer could plant.
 
->  **Live Demo:** https://your-demo-link-here.netlify.app *(Add link when deployed)*
+>  **Live Demo:** https://agribrain-ai-1022818522174.africa-south1.run.app/ *(Add link when deployed)*
 
 ---
 
