@@ -22,7 +22,6 @@ The platform helps reduce the aspect of guesswork in decision making on what to 
 - [Usage](#-usage)
 - [Project Structure](#-project-structure)
 - [Key Design Decisions](#-key-design-decisions)
-- [Known Limitations](#-known-limitations)
 - [Roadmap](#-roadmap)
 - [License](#-license)
 
