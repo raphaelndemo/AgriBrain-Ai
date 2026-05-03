@@ -1,5 +1,5 @@
 [UI]
-name = "AgriBrain 🌱"
+name = "AgriBrain "
 default_theme = "dark"
 layout = "wide"
 custom_css = "/public/custom.css"

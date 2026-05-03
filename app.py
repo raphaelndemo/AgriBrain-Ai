@@ -1,96 +1,106 @@
-import os
-import random
-from datetime import datetime, timezone
-from dotenv import load_dotenv
 import chainlit as cl
-
-# message requests and linkage
-from chainlit.server import app as chainlit_app
-from backend_scripts.whatsapp_webhook import webhook_router
-chainlit_app.include_router(webhook_router)
-
-
-# Import internal backend routing
+from geopy.geocoders import Nominatim
 from backend_scripts.router import process_agribrain_message
-from backend_scripts.telemetry import supabase 
+from backend_scripts.telemetry import supabase
 
-load_dotenv()
-
-BOT_PHONE_NUMBER = os.getenv("BOT_PHONE_NUMBER")
-
-# authentication and session management
 @cl.on_chat_start
-async def on_start():
-    # phone number for verification
-    res = await cl.AskUserMessage(
-        content="**HELLO**\n\nEnter your WhatsApp number format: **254700000000** to log in.",
+async def start_chat():
+    # Authentication 
+    phone_res = await cl.AskUserMessage(
+        content="**HELLO**\nI am **AgriBrain**\nPlease enter your registered phone number (e.g., 0712345678) to log in:", 
         timeout=120
     ).send()
     
-    if not res:
-        return
-    phone_number = res['output'].strip()
-    cl.user_session.set("user_phone", phone_number)
+    if phone_res:
+        phone = phone_res['output'].strip()
         
-    try:
-        # Check database 
-        profile_check = supabase.table("user_profiles").select("is_verified, verified_at").eq("phone", phone_number).execute()
+        # Check Supabase Database
+        user_query = supabase.table("user_profiles").select("*").eq("user_phone", phone).execute()
+        
+        if not user_query.data:
+            # The WhatsApp Deep-Link Fallback
+            wa_link = "https://wa.me/254742066244?text=Register" # <-- PUT YOUR BOT NUMBER HERE
+            await cl.Message(content=f"Account not found.\nTo interact with me, you must first register via our WhatsApp bot. [Click here to open WhatsApp and register]({wa_link})").send()
+            return
             
-        if profile_check.data and len(profile_check.data) > 0:
-            profile = profile_check.data[0]
-            
-            if profile.get("is_verified"):
-                verified_at_str = profile.get("verified_at")
-                if verified_at_str:
-                    verified_at = datetime.fromisoformat(verified_at_str.replace('Z', '+00:00'))
-                    days_since_verification = (datetime.now(timezone.utc) - verified_at).days
-                    
-                    if days_since_verification < 30:
-                        cl.user_session.set("is_verified", True)
-                        await cl.Message(content="**Chat Restored.** How can I be of help to you today?").send()
-                        return 
-            
-            # Trigger Handshake
-            cl.user_session.set("is_verified", False)
-            supabase.table("user_profiles").upsert({"phone": phone_number, "is_verified": False}).execute()
-            
-            verify_code = f"AGRI-{random.randint(1000, 9999)}"
-            wa_link = f"https://wa.me/{BOT_PHONE_NUMBER}?text=Verify%20{verify_code}"
-            
-            await cl.Message(
-                content=f"**2FA Required**\n1. [Click Here to Authenticate via WhatsApp]({wa_link})\n2. Send the auto-filled verification code.\n3. **Type 'Done' here** once you have sent the WhatsApp message."
-            ).send()
-            
-    except Exception as e:
-        await cl.Message(content=f"Connection Error. Details: {e}").send()
+        # 2. Lock Session securely
+        cl.user_session.set("phone", phone)
+        user_data = user_query.data
+        
+        # 3. Location Check
+        if user_data[0].get("latitude") is None or user_data[0].get("longitude") is None:
+            # Valid Dictionary Payload for Chainlit 1.0+
+            actions = [cl.Action(name="share_loc", payload={"request": "location"}, label="Share My Location")]
+            await cl.Message(content="Login Successful\nI don't have your farm's location. Please share it so we can analyze your local soil and market prices.", actions=actions).send()
+        else:
+            await cl.Message(content="**Login Successful!**\nYou can type your farming questions, or use the paperclip icon (📎) to upload crop images for disease diagnosis.").send()
 
+@cl.action_callback("share_loc")
+async def handle_location(action: cl.Action):
+    phone = cl.user_session.get("phone")
+    await action.remove() # Removes the button from the chat so they can't click it twice
+    
+    # Ask the user for their actual town
+    res = await cl.AskUserMessage(
+        content="Location Setup:\nPlease type the name of your town, village, or county:", 
+        timeout=120
+    ).send()
+    
+    if res:
+        town_name = res['output'].strip()
+        loading_msg = cl.Message(content=f"Locating {town_name} via satellite")
+        await loading_msg.send()
+        
+        # Geocode the town into Lat/Lon
+        try:
+            geolocator = Nominatim(user_agent="agribrain_web_ui")
+            location = geolocator.geocode(f"{town_name}, Kenya")
+            
+            if location:
+                live_lat, live_lon = location.latitude, location.longitude
+                
+                # 3. Update Supabase with real coordinates
+                supabase.table("user_profiles").update({"latitude": live_lat, "longitude": live_lon}).eq("user_phone", phone).execute()
+                
+                loading_msg.content = f"**Coordinates Locked:** {town_name} (Lat: {live_lat:.4f}, Lon: {live_lon:.4f}).\n\nYour farm profile is complete! What would you like to ask AgriBrain?"
+                await loading_msg.update()
+                
+                # Silently inject the context into the AI's memory
+                msg = f"SYSTEM INJECTION: User updated their farm location to {town_name}. Coordinates: Lat {live_lat}, Lon {live_lon}."
+                await cl.make_async(process_agribrain_message)(phone, msg)
+                
+            else:
+                loading_msg.content = f"Could not pinpoint '{town_name}' on the map. Please refresh and try a larger nearby town."
+                await loading_msg.update()
+                
+        except Exception as e:
+            loading_msg.content = f"Spatial routing offline: {e}"
+            await loading_msg.update()
 
 @cl.on_message
-async def on_message(message: cl.Message):
-    user_phone = cl.user_session.get("user_phone")
-    is_verified = cl.user_session.get("is_verified")
+async def handle_ui_message(message: cl.Message):
+    phone = cl.user_session.get("phone")
+    if not phone:
+        await cl.Message(content="Please refresh the page and log in first.").send()
+        return
 
-    if not is_verified:
-        if message.content.strip().lower() == "done":
-            try:
-                check = supabase.table("user_profiles").select("is_verified").eq("phone", user_phone).execute()
-                
-                if check.data and check.data[0].get("is_verified") == True:
-                    cl.user_session.set("is_verified", True)
-                    await cl.Message(content="**Login Successful!** . How can I be of help to you today?").send()
-                else:
-                    await cl.Message(content="I haven't received the verification code yet. Please ensure you sent the WhatsApp message, then type 'Done' again.").send()
-            except Exception as e:
-                 await cl.Message(content=f"Check failed: {e}").send()
-            return
-        else:
-            await cl.Message(content="Access Denied. Please verify via WhatsApp and type 'Done'.").send()
-            return
+    # Multimodal Image Processing (Max 2 images to protect API limits)
+    image_bytes_list = []
+    if message.elements:
+        image_elements = [el for el in message.elements if "image" in el.mime][:2]
+        for element in image_elements:
+            with open(element.path, "rb") as f:
+                image_bytes_list.append(f.read())
 
-    # Post-verification message processing
-    try:
-        # start up the LLM to avoid ContextVar errors during streaming
-        ai_response = process_agribrain_message(user_phone, message.content)
-        await cl.Message(content=ai_response).send()
-    except Exception as e:
-        await cl.Message(content=f"Processing Error: {e}").send()
+    msg = cl.Message(content="Analyzing...")
+    await msg.send()
+
+    # Send payload to the LangChain Router
+    ai_response = await cl.make_async(process_agribrain_message)(
+        user_phone=phone, 
+        message_text=message.content, 
+        image_data_list=image_bytes_list if image_bytes_list else None
+    )
+    
+    msg.content = ai_response
+    await msg.update()

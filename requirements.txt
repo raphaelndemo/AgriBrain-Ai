@@ -1,6 +1,8 @@
 # Web Framework & Server
 fastapi
 uvicorn
+ddgs
+pillow
 
 # HTTP Clients
 httpx
@@ -31,6 +33,8 @@ pandas
 numpy
 scikit-learn==1.8.0
 joblib
+matplotlib
+seaborn
 
 # Web Scraping
 selenium
@@ -43,6 +47,7 @@ chainlit
 
 # machine learning model
 xgboost
+prophet
 
 # encoding
 chardet

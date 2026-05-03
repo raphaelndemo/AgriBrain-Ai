@@ -1,140 +1,117 @@
 import os
-import requests
-from datetime import datetime, timezone
-from fastapi import APIRouter, Request, HTTPException
+import httpx
+from fastapi import FastAPI, Request, HTTPException, Response
 from dotenv import load_dotenv
-
-# Import your external logic
-from backend_scripts.telemetry import supabase
 from backend_scripts.router import process_agribrain_message
+from backend_scripts.telemetry import supabase
 
+# Load environment variables
 load_dotenv()
-
-# Initialize the Router to plug into Chainlit
-webhook_router = APIRouter()
-
-
-VERIFY_TOKEN = os.getenv("WHATSAPP_VERIFICATION_TOKEN")
 WHATSAPP_TOKEN = os.getenv("WHATSAPP_TOKEN")
-PHONE_NUMBER_ID = os.getenv("WHATSAPP_PHONE_NUMBER_ID") 
+WHATSAPP_PHONE_ID = os.getenv("WHATSAPP_PHONE_ID") # Found in Meta App Dashboard
+WHATSAPP_VERIFICATION_TOKEN = os.getenv("WHATSAPP_VERIFICATION_TOKEN", "agribrain_secure_123") # You set this in Meta Dashboard
 
-def send_whatsapp_message(to: str, text: str):
-    """Transmits execution results back to the user edge device."""
-    url = f"https://graph.facebook.com/v17.0/{PHONE_NUMBER_ID}/messages"
-    payload = {
-        "messaging_product": "whatsapp", 
-        "to": to, 
-        "type": "text", 
-        "text": {"body": text}
-    }
+app = FastAPI(title="AgriBrain WhatsApp Node")
+
+# HELPER FUNCTIONS
+async def send_whatsapp_message(to_phone: str, text: str):
+    """Sends the AI's response back to the farmer via Meta Graph API."""
+    url = f"https://graph.facebook.com/v18.0/{WHATSAPP_PHONE_ID}/messages"
     headers = {
-        "Authorization": f"Bearer {WHATSAPP_TOKEN}", 
+        "Authorization": f"Bearer {WHATSAPP_TOKEN}",
         "Content-Type": "application/json"
     }
-    
-    response = requests.post(url, json=payload, headers=headers)
-    if response.status_code != 200:
-        print(f"Failed to send message: {response.text}")
+    payload = {
+        "messaging_product": "whatsapp",
+        "to": to_phone,
+        "type": "text",
+        "text": {"body": text}
+    }
+    async with httpx.AsyncClient() as client:
+        await client.post(url, headers=headers, json=payload)
 
-def download_whatsapp_media(media_id: str) -> bytes:
-    """Fetches the secure media URL from Meta and downloads the binary image."""
+async def download_meta_image(media_id: str) -> bytes:
+    """Securely downloads image bytes from Meta's servers."""
     headers = {"Authorization": f"Bearer {WHATSAPP_TOKEN}"}
-    
-    # Ask Meta for the secure download URL
-    url_request = requests.get(f"https://graph.facebook.com/v17.0/{media_id}", headers=headers)
-    if url_request.status_code != 200:
-        print(f"Failed to get media URL: {url_request.text}")
-        return None
+    async with httpx.AsyncClient() as client:
+        # 1. Ask Meta for the specific image URL
+        res = await client.get(f"https://graph.facebook.com/v18.0/{media_id}", headers=headers)
+        res.raise_for_status()
+        media_url = res.json().get("url")
         
-    media_url = url_request.json().get("url")
-    
-    # Download the actual image bytes
-    image_request = requests.get(media_url, headers=headers)
-    if image_request.status_code == 200:
-        return image_request.content
-    return None
+        # 2. Download the actual binary image data
+        img_res = await client.get(media_url, headers=headers)
+        img_res.raise_for_status()
+        return img_res.content
 
-
-# routes
-
-@webhook_router.get("/webhook")
+# WEBHOOK ENDPOINTS
+@app.get("/webhook")
 async def verify_webhook(request: Request):
-    """Handles the Meta Verification Handshake"""
+    """Required by Meta to authorize the webhook URL."""
     mode = request.query_params.get("hub.mode")
     token = request.query_params.get("hub.verify_token")
     challenge = request.query_params.get("hub.challenge")
-
-    if mode == "subscribe" and token == VERIFY_TOKEN:
-        print("Webhook verified successfully!")
-        return Response(content=challenge, media_type="text/plain")
     
-    raise HTTPException(status_code=403, detail="Forbidden")
+    if mode and token:
+        if mode == "subscribe" and token == WHATSAPP_VERIFICATION_TOKEN:
+            return Response(content=challenge, media_type="text/plain")
+    raise HTTPException(status_code=403, detail="Invalid verification token")
 
-@webhook_router.post("/webhook")
-async def handle_whatsapp_message(request: Request):
-    """Data Engineering node for parsing Meta Graph JSON payloads."""
-    data = await request.json()
-    
+@app.post("/webhook")
+async def whatsapp_listener(request: Request):
+    """The main ingestion engine for all WhatsApp payloads."""
     try:
-        # Navigate through Meta's nested arrays safely using
-        entry = data['entry'][0]['changes'][0]['value']
+        data = await request.json()
         
-        if 'messages' in entry:
-            msg_obj = entry['messages'][0]
-            sender_phone = msg_obj['from']
-            msg_type = msg_obj.get('type')
+        # Safely navigate Meta's massive JSON payload structure
+        if "entry" in data and data["entry"].get("changes"):
+            value = data["entry"]["changes"]["value"]
             
-            incoming_text = ""
-            image_bytes = None
-            
-            # data ingestion and transformation logic based on message type
-            
-            if msg_type == 'location':
-                lat = msg_obj['location']['latitude']
-                lon = msg_obj['location']['longitude']
-                incoming_text = f"SYSTEM: User dropped a GPS pin at Lat {lat}, Lon {lon}. Analyze this location's soil and weather."
+            if "messages" in value:
+                message = value["messages"]
+                phone = message["from"]
+                msg_type = message["type"]
                 
-            elif msg_type == 'image':
-                media_id = msg_obj['image']['id']
-                incoming_text = msg_obj['image'].get('caption', "Analyze this farm image.")
-                
-                # Fetch the image from Meta's servers
-                image_bytes = download_whatsapp_media(media_id)
-                if not image_bytes:
-                    send_whatsapp_message(sender_phone, "Pole, I couldn't download that image. Please try sending it again.")
-                    return {"status": "success"}
-                    
-            elif msg_type == 'text':
-                incoming_text = msg_obj['text']['body']
-                
-                # Intercept the 2FA verification code
-                if incoming_text.startswith("Verify AGRI-"):
-                    supabase.table("user_profiles").upsert({
-                        "phone": sender_phone, 
-                        "is_verified": True,
-                        "verified_at": datetime.now(timezone.utc).isoformat()
-                    }).execute()
-                    
-                    send_whatsapp_message(sender_phone, "2FA Verified. Dashboard Unlocked. What do you need help with today?")
-                    return {"status": "success"}
-            else:
-                # Ignore unsupported types (audio, documents, etc.) for now
-                return {"status": "success"}
+                # 1. Auto-Registration Check
+                user_query = supabase.table("user_profiles").select("*").eq("user_phone", phone).execute()
+                if not user_query.data:
+                     # Silently register new users so DB logs don't crash
+                     supabase.table("user_profiles").insert({"user_phone": phone, "is_verified": True}).execute()
 
-            # For the LLM to Pass the cleaned and structured data to the router for AI processing
-            
-            # Pass the data to your router (ensure process_agribrain_message accepts image_data!)
-            if image_bytes:
-                ai_response = process_agribrain_message(sender_phone, incoming_text, image_data=image_bytes)
-            else:
-                ai_response = process_agribrain_message(sender_phone, incoming_text)
+                # 2. Route based on Message Type
+                ai_response = ""
                 
-            # Send AI response back to WhatsApp
-            send_whatsapp_message(sender_phone, ai_response)
-            
-    except (KeyError, IndexError) as e:
-        # Catch indexing errors silently so Meta doesn't retry the payload, but log it for debugging
-        print(f"Webhook Payload Parsing Error: {e}") 
+                if msg_type == "location":
+                    lat = message["location"]["latitude"]
+                    lon = message["location"]["longitude"]
+                    
+                    # Instantly save to Supabase
+                    supabase.table("user_profiles").update({"latitude": lat, "longitude": lon}).eq("user_phone", phone).execute()
+                    
+                    text_payload = f"SYSTEM INJECTION: User dropped a GPS pin at Lat: {lat}, Lon: {lon}. Acknowledge and analyze the region."
+                    ai_response = process_agribrain_message(phone, text_payload)
+                    
+                elif msg_type == "image":
+                    image_id = message["image"]["id"]
+                    image_bytes = await download_meta_image(image_id)
+                    
+                    # Check if they sent text WITH the image
+                    caption = message.get("image", {}).get("caption", "Analyze this crop image.")
+                    ai_response = process_agribrain_message(phone, caption, [image_bytes])
+                    
+                elif msg_type == "text":
+                    text_payload = message["text"]["body"]
+                    ai_response = process_agribrain_message(phone, text_payload)
+                
+                else:
+                    ai_response = "I currently only support text messages, photos of crops, and GPS location pins."
+
+                # 3. Send the AI's final answer back to WhatsApp
+                if ai_response:
+                    await send_whatsapp_message(phone, ai_response)
+                
+    except Exception as e:
+        print(f"Webhook Isolation Caught Error: {e}")
         
-    # Always return a 200 OK so Meta knows the webhook was received
-    return {"status": "success"}
+    # Meta requires a 200 OK response within seconds, regardless of what happens
+    return {"status": "ok"}

@@ -1,7 +1,7 @@
 import os
 import joblib
 
-# Isolate the exact path within the Docker container structure
+# Isolate the exact path within the  container 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 YIELD_MODEL_PATH = os.path.join(BASE_DIR, "ml_models", "yield_predictor.pkl")
 MARKET_MODEL_PATH = os.path.join(BASE_DIR, "ml_models", "market_forecaster.pkl")
