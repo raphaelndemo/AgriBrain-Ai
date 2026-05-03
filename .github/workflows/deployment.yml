@@ -2,7 +2,7 @@ name: Deploying to Google Cloud Run
 
 on:
   push:
-    branches: [ "testing" ]
+    branches: [ "main" ]
   workflow_dispatch:
 
 env:
